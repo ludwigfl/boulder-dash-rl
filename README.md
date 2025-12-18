@@ -1,6 +1,6 @@
 # OBS
--This is a reinforcement learning project using an existing version of Boulder Dash 
--Original creator of this Boulder Dash game is made by Olivier Charles, GIT:[Olivier Charles Boulder Dash](https://github.com/Olivier7355/boulder-dash)
+- This is a reinforcement learning project using an existing version of Boulder Dash 
+- Original creator of this Boulder Dash game is made by Olivier Charles, GIT:[Olivier Charles Boulder Dash](https://github.com/Olivier7355/boulder-dash)
 
 # Boulder Dash (PyGame)
 
