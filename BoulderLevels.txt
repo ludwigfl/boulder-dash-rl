@@ -7,7 +7,6 @@
 ; https://www.boulder-dash.nl/down/maps/PeterLiepa/BoulderDash01.html
 ; https://boulder-dash.com/online-free-game/
 
-
 ; 1
 
 ########################################
@@ -33,11 +32,10 @@
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#
 ########################################
 
-
 ; 2
 
 ########################################
-#xxxxxxsxxdxosxxxxxoxoxxxxxxxsxxxxoxxxx#
+#exxxxxsxxdxosxxxxxoxoxxxxxxxsxxxxoxxxx#
 #xo@oxxxxxxsxxxxxxxxxodxxoxxxxsxxxxxsxx#
 #xxxxxxxxxxsxxoxxxxxoxoxxoxxxxxxxxoxxxx#
 #oxooxxxxxxxxxoxxxxxxoxxoxxxxoxxxoxxxxx#
@@ -52,13 +50,12 @@
 #xsoxxxxxxxxxxxxxxosoxxoxxxxxxxxdxxxxxo#
 #xxxxxxxx==============================#
 #soxxxxxxxxxoxxxdxxxxoxxxxxoxxxoxxxxxxx#
-#soxxxxxxxxxsoxxoxxxxxxxxoxxxxxxoxooxxe#
+#soxxxxxxxxxsoxxoxxxxxxxxoxxxxxxoxooxxx#
 #xsxxoxxxxxxxxoxxxxxoxssxxxxdxxxoxooxxx#
 #xxxxodxxoxxxxxxxxoxxxxxxoxoxxxxxxxoxxx#
 #xxxsxxoxsxxoxooxxxxxxxxxoxodxxxxxxsxxo#
 #xdxxxxsxxxxxsxxxxxxxxxsxoxxoxxxxoxxxox#
 ########################################
-
 
 ; 3
 
@@ -120,8 +117,8 @@
 #=ssssssssxxxxxxoxxxoxxxxxxxoxssssssss=#
 #=sdssssssxxxxoxxxxxxoxooxxxxxssssssds=#
 #=========xooxxxxxxxxoxooxxxxx=========#
-#=ssssssssxxxxoxoxxxxoxxoxxxxxssssssss=#
-#=sdssssssxxxxoxoxxxxoxxoxxoxxssssssds=#
+#=ssssssssxxxxoxoxxxxoxxoxxxxxssxoxsss=#
+#=sdssssssxxxxoxoxxxxoxxoxxoxxssxoxsds=#
 #=========xooxoxxoxxxxoxxxoxxx=========#
 #=ssssssssxooxoxxoxxxxxxxxxxxxssssssss=#
 #=sdssssssxxxxoxxoxxxxxxxxoxxxssssssds=#
@@ -129,9 +126,9 @@
 #xxxxoxoxxoxxxxxxxxoxxxxxoxxxxxxxxxxxxo#
 #xxxxxxoxxxxoxxxxoxxoxoxxxoxxoxxxxxxxxx#
 #xxoxxxxoxxxxxoxxxoxxxxxxxoxxoxxxxxxxxx#
-#xoxxxxxxxxxoxxxxxxoxooxxxxxxxxxoxxxxxx#
-#ox@xxxoxxxxxxxxxxxoxooxxxxxxxxxooxxoxe#
-#xxxxoxxxxxxoxooxxxxxxoxxxxxxxxoxxoxxxx#
+#xoxxxxxxxxxoxxxxxxoxooxxxxxxxxxoxxx===#
+#ox@xxxoxxxxxxxxxxxoxooxxxxxxxxxooxxxoe#
+#xxxxoxxxxxxoxooxxxxxxoxxxxxxxxoxxoxxoo#
 #ooxxxxxxxxxoxooxxxxxxxxxoxxoxoxoxxoxxx#
 ########################################
 
@@ -158,29 +155,4 @@
 #xsoxxxxoxxxxsxssxxxxxxoosoxxoxxxssxxxo#
 #oxssxxoxssxxxxxoxoxsxxxssoxxoxxxxsxxxo#
 #xxxssxoxosxxxxxoxoxxxxxsssxxsxoxxxxoxx#
-########################################
-
-; 7
-
-########################################
-#oxsxxxooxxxxxoxoxxoxxxxxxxxoxxxxxoxxdx#
-#xxxxxdxoxxxxxxxsxxxxoxxxxoxxoxxxxxsxxo#
-#xxxxxxxod=xox=xxs=xxx=oxxxoxxxssxxsxxs#
-#d===========x=xxx=xxo=xxxxxoxxssxxxxxx#
-#oxxxxxxxx=xxx=xox=sdx=xxxxxoxxxxxxxxxx#
-#ooxxoxxxx=xxx=xxx=xxo=ooxxxxxxoxxdxxxx#
-#xxoxxxxxo=oox=xxx=xxo=ooxxxxxxxxxoxxxo#
-#x===========x=xox=sxo=xoxxxxoxssxxxdxo#
-#oxoxxxxxx=xxx=xox=xxo=xoxxdxxxssxxxoxx#
-#xoxxxxxxx=oos=xxd=xxs=xxxoxxxxxxxdxoxx#
-#sxxxxxxxx=oos=xxo=xxx=xxxsxxoxxxxxoxxx#
-#x===============o=xxx=xxxoxxxxxxxxoxss#
-#xxxoxoxxx=xxx=oxx=oxx=xoxxoxoxssxxxxxx#
-#xxxxosoxx=xxx=xxx=dxx=xxosxxxxssxxxxxd#
-#xxxxsxoxxxxdx=xxo=xox=xxxoxsoxxxxxxxxx#
-#x===========x=xxx=xxx=xxxoxsoxxxxxxxxx#
-#xxoxxxxxx=xox=xxx=oxo=xxxxxxsxxoxxxxxx#
-#ox@xxxoxs=xxx=xxx=oxo=xxxxxxxxxodxxoxx#
-#xxxxoxxxx=xox=xxx=xxx=xxxxsxxxoxxdxsxx#
-#ooxxxxxxx=xox=xxx=xxx=xxoxxdxdxoxxoxxe#
 ########################################

@@ -34,7 +34,8 @@ DOWN = 'down'
 LEFT = 'left'
 RIGHT = 'right'
 
-updateTimer = 0
+#updateTimer = 0
+MAXROCKTIMER = 5
 
 # Load the sounds
 pygame.mixer.pre_init(44100, -16, 2, 512)
@@ -165,7 +166,7 @@ def readLevelsFile(filename):
             starty = None
             exitx = None # The x and y for the exit position
             exity = None
-            rocks = [] # list of (x, y) tuples for each rock.
+            rocks = [] # list of (x, y, timer) tuples for each rock.
             diamonds = [] # list of (x, y) for each diamond.
             enemies = [] # list of (x, y) for each enemie.
             for x in range(maxWidth):
@@ -176,10 +177,10 @@ def readLevelsFile(filename):
                         starty = y
                     if mapObj[x][y] in ('o'):
                         # 'o' is rock
-                        rocks.append((x, y))
+                        rocks.append((x, y, MAXROCKTIMER))
                     if mapObj[x][y] in ('d'):
                         # 'd' is diamond
-                        diamonds.append((x, y))
+                        diamonds.append((x, y, MAXROCKTIMER))
                     if mapObj[x][y] in ('a'):
                         # 'a' is enemie
                         enemies.append((x, y))    
@@ -249,13 +250,15 @@ def drawMap(mapObj, gameStateObj):
     return mapSurf
 
 
-def isWallorBrick(mapObj, x, y):
+def isWallorBrick(mapObj, gameStateObj, x, y):
     """Returns True if the (x, y) position on
     the map is a wall or a brick, otherwise return False."""
     if x < 0 or x >= len(mapObj) or y < 0 or y >= len(mapObj[x]):
         return False # x and y aren't actually on the map.
     elif mapObj[x][y] in ('#', '='):
         return True # wall or brick is blocking
+    elif mapObj[x][y] == 'e' and len(gameStateObj['diamonds']) != 0:
+        return True
     return False
    
     
@@ -263,7 +266,7 @@ def RockisBlocked (mapObj, gameStateObj, x, y):
     """Returns True if the (x, y) position on the map is
     blocked by a dirt, a wall, a brick or a diamond otherwise return False."""
 
-    if mapObj[x][y] in ('#', '=', 'x', 'o', 'd'):
+    if mapObj[x][y] in ('#', '=', 'x', 'o', 'd', 'e'):
         return True
 
     elif x < 0 or x >= len(mapObj) or y < 0 or y >= len(mapObj[x]):
@@ -273,6 +276,13 @@ def RockisBlocked (mapObj, gameStateObj, x, y):
     #    return True # a rock is blocking
 
     return False
+
+def findIndex(rockOrGem, x, y):
+    for i in range(len(rockOrGem)):
+        if rockOrGem[i][0] == x and rockOrGem[i][1] == y:
+            return i
+    return None
+
 
 def makeMove(mapObj, gameStateObj, playerMoveTo):
     global diamondsCatched, diamonds_group, diamondsIns
@@ -305,16 +315,17 @@ def makeMove(mapObj, gameStateObj, playerMoveTo):
         yOffset = 0
         
     # See if the player can move in that direction.
-    if isWallorBrick(mapObj, playerx + xOffset, playery + yOffset):
+    if isWallorBrick(mapObj, gameStateObj, playerx + xOffset, playery + yOffset):
         return False
     else:   
-        if (playerx + xOffset, playery + yOffset) in rocks:
+        if findIndex(rocks, playerx + xOffset, playery + yOffset) != None:
+        #if (playerx + xOffset, playery + yOffset) in rocks:
             # There is a rock in the way, see if the player can push it.
             #also check if rock is not in air
             if mapObj[playerx+xOffset][playery+1] != 's' and not RockisBlocked(mapObj, gameStateObj, playerx + (xOffset*2), playery + (yOffset*2)):
                 # Move the rock.
-                ind = rocks.index((playerx + xOffset, playery + yOffset))
-                rocks[ind] = (rocks[ind][0] + xOffset, rocks[ind][1] + yOffset)
+                ind = findIndex(rocks, playerx + xOffset, playery + yOffset)
+                rocks[ind] = (rocks[ind][0] + xOffset, rocks[ind][1] + yOffset, MAXROCKTIMER)
                 mapObj[playerx+ (xOffset*2)][playery] ='o'
                 fallingRock_fx.play()
                                     
@@ -322,14 +333,15 @@ def makeMove(mapObj, gameStateObj, playerMoveTo):
                 return False
             
         # There is a diamond in the way    
-        if (playerx + xOffset, playery + yOffset) in diamonds:
+        if findIndex(diamonds, playerx + xOffset, playery + yOffset) != None:
+        #if (playerx + xOffset, playery + yOffset) in diamonds:
             mapObj[playerx + xOffset][playery] ='s'
             diamondsCatched += 1
-            #print(diamondsCatched)
             collectDiamond_fx.play()
             
             # Delete the diamond from the list of diamonds in the curent level.
-            ind = diamonds.index((playerx + xOffset, playery + yOffset))
+            ind = findIndex(diamonds, playerx + xOffset, playery + yOffset)
+            #ind = diamonds.index((playerx + xOffset, playery + yOffset))
             del diamonds[ind]
             
             if not diamonds :
@@ -361,7 +373,7 @@ def isLevelFinished(levelObj, gameStateObj):
     return False
 
 
-def moveEnemies(mapObj, gameStateObj) :
+"""def moveEnemies(mapObj, gameStateObj) :
     global enemieLastDirection, deadRockford
     Rockford = gameStateObj['player']
     enemies = gameStateObj['enemies']
@@ -449,114 +461,102 @@ def moveEnemies(mapObj, gameStateObj) :
         if mapObj[x][y-1] == 'o':
             mapObj[x][y] == "s"
             
-        return True
+        return True"""
 
     
  
 def rockHasToFall(mapObj, gameStateObj):
     died = False
     rockFell = False
-    global updateTimer
-    px,py = gameStateObj['player'][0], gameStateObj['player'][1]
-    updateTimer += 1
-    if updateTimer == 5:
-        updateTimer = 0
+    global deadRockford
+    rocks = gameStateObj['rocks']
+    diamonds = gameStateObj['diamonds']
+    #Rockford = gameStateObj['player']
+    (px, py) = gameStateObj['player']
+    elementList = [rocks, diamonds]
+    rockOrDiamonds =['o','d'] 
+    
+    for element in elementList :
+        for x, y, timer in element:
+            #edgecase fix
+            if y < 1 or y > 21 or x < 1 or x > 39:
+                continue
+            # A rock or a diamond falls on Rockford
+            if ((mapObj[x][y+1] == 's') and (x == px and y+2 == py)) or (mapObj[px][py] == 's' and (x == px and y+1 == py)):
+                
+                if timer != 0:
+                    element[findIndex(element, x, y)] = (x, y, timer-1)
+                    continue
+                # Display the explosion
+                mapObj[x][y] = 's'
+                for j in range(-1,2):
+                    for k in range(-1,2):
+                        mapObj[px+k][py+j] = 'b'
+                        
+                explosion_fx.play()
+                deadRockford = True
+                died = True
+                rockFell = True
+                continue
+                #return True, died                          
+                        
+            # The rock move to y+1 if this space is empty 
+            if mapObj[x][y+1] == 's':
+                if timer != 0:
+                    element[findIndex(element, x, y)] = (x, y, timer-1)
+                    continue
 
-        global deadRockford
-        rocks = gameStateObj['rocks']
-        diamonds = gameStateObj['diamonds']
-        Rockford = gameStateObj['player']
-        elementList = [rocks, diamonds]
-        rockOrDiamonds =['o','d'] 
-        
-        for element in elementList :
-            for x, y in element :
+                mapObj[x][y] = 's'
+                if element == rocks : # update the rocks position in the list of rocks
+                    mapObj[x][y+1] = 'o'
+                    fallingRock_fx.play()
+                elif element == diamonds : # update the diamond position in the list of diamonds
+                    mapObj[x][y+1] = 'd' 
+                    diamond_fx.play()
                 
-                #edgecase fix
-                if y < 1 or y > 21 or x < 1 or x > 39:
-                    continue
-                # A rock or a diamond falls on Rockford
-                if (y < 21 and (mapObj[x][y+1] == 's') and  (x == px and y+2 == py)):
-                    #print('You are dead !')
-                    
-                    # Display the explosion
-                    mapObj[x][y] = 's'
-                    for j in range(1,4) :
-                        mapObj[x][y+j] = 'b'
-                        mapObj[x-1][y+j] = 'b'
-                        mapObj[x+1][y+j] = 'b'
-                
-                    explosion_fx.play()
-                    deadRockford = True
-                    died = True
-                    rockFell = True
-                    continue
-                    #return rockFell, died
-                '''elif ((mapObj[x][y+1] == 'o') and (mapObj[x-1][y] == 's') and (mapObj[x-1][y+1] == 's') and (x-1 == Rockford[0] and y+2 == Rockford[1])):
-                    #print('You are dead !')
-                    
-                    # Display the explosion
-                    mapObj[x][y] = 's'
-                    for j in range(1,4) :
-                        mapObj[x-1][y+j] = 'b'
-                        mapObj[x-2][y+j] = 'b'
-                        mapObj[x][y+j] = 'b'
-                
-                    explosion_fx.play()
-                    deadRockford = True
-                    died = True
-                    rockFell = True
-                    continue
-                    #return True, died'''
-                                     
-                            
-                # The rock move to y+1 if this space is empty 
-                if mapObj[x][y+1] == 's' :
+                ind = findIndex(element, x, y)
+                element[ind] = (x,y+1, MAXROCKTIMER)
+                rockFell = True
+                continue
+            
+            #if on top of unstable ground
+            if mapObj[x][y+1] == 'o' or mapObj[x][y+1] == 'd' or mapObj[x][y+1] == '=':
+                if mapObj[x-1][y] == 's' and mapObj[x-1][y+1] == 's' and not (x-1 == px and (y+1 == py or y == py)): #if it can roll left
+                    if timer != 0:
+                        element[findIndex(element, x, y)] = (x, y, timer-1)
+                        continue
+                    #element[findIndex(element, x, y)] = (x, y, 8)
+
                     mapObj[x][y] = 's'
                     if element == rocks : # update the rocks position in the list of rocks
-                        #time.sleep(0.25)
-                        mapObj[x][y+1] = 'o'
-                        #if mapObj[x][y+2] != 's':
-                        #    fallingRock_fx.play()
+                        mapObj[x-1][y] = 'o'
+                        fallingRock_fx.play()    
                     elif element == diamonds : # update the diamond position in the list of diamonds
-                        mapObj[x][y+1] = 'd' 
+                        mapObj[x-1][y] = 'd'
                         diamond_fx.play()
-                    
-                    ind = element.index((x, y))
-                    element[ind] = (x,y+1)
+                    ind = findIndex(element, x, y)
+                    element[ind] = (x-1,y, MAXROCKTIMER)
                     rockFell = True
                     continue
-                    #return True, died
-                
-                if mapObj[x][y+1] == 'o' or mapObj[x][y+1] == 'd' or mapObj[x][y+1] == '=':
-                    if mapObj[x-1][y] == 's' and mapObj[x-1][y+1] == 's' and not (x-1 == px and (y+1 == py or y == py)): #if it can roll left
-                        mapObj[x][y] = 's'
-                        if element == rocks : # update the rocks position in the list of rocks
-                            mapObj[x-1][y] = 'o'
-                            fallingRock_fx.play()    
-                        elif element == diamonds : # update the diamond position in the list of diamonds
-                            mapObj[x-1][y] = 'd'
-                            diamond_fx.play()
-                        ind = element.index((x, y))
-                        element[ind] = (x-1,y)
-                        rockFell = True
+                elif mapObj[x+1][y] == 's' and mapObj[x+1][y+1] == 's' and not (x+1 == px and (y+1 == py or y == py)): #if it can roll right
+                    if timer != 0:
+                        element[findIndex(element, x, y)] = (x, y, timer-1)
                         continue
-                    elif mapObj[x+1][y] == 's' and mapObj[x+1][y+1] == 's' and not (x+1 == px and (y+1 == py or y == py)): #if it can roll right
-                        mapObj[x][y] = 's'
-                        if element == rocks : # update the rocks position in the list of rocks
-                            mapObj[x+1][y] = 'o'
-                            fallingRock_fx.play() 
-                        
-                        elif element == diamonds : # update the diamond position in the list of diamonds
-                            mapObj[x+1][y] = 'd'
-                            diamond_fx.play() 
-                        
-                        ind = element.index((x, y))
-                        element[ind] = (x+1,y)
-                        rockFell = True
-                        continue 
-                
-        return rockFell, died
+                    #element[findIndex(element, x, y)] = (x, y, 8)
+
+                    mapObj[x][y] = 's'
+                    if element == rocks : # update the rocks position in the list of rocks
+                        mapObj[x+1][y] = 'o'
+                        fallingRock_fx.play() 
+                    
+                    elif element == diamonds : # update the diamond position in the list of diamonds
+                        mapObj[x+1][y] = 'd'
+                        diamond_fx.play() 
+                    
+                    ind = findIndex(element, x, y)
+                    element[ind] = (x+1,y, MAXROCKTIMER)
+                    rockFell = True
+                    continue
     return rockFell, died
  
 def updateScoreBoard(gameStateObj):
@@ -659,7 +659,6 @@ def runLevel(levels, levelNum):
         
         # Create a cool down period for the animations of the falling rocks        
         current_time = pygame.time.get_ticks()
-        #print(current_time)
         if current_time - last_update >= animation_cooldown:
             last_update = current_time
                     
@@ -677,7 +676,7 @@ def runLevel(levels, levelNum):
             last_update_enemie = current_time_enemie
         
             # Move the enemies
-            if moveEnemies(mapObj, gameStateObj) : mapNeedsRedraw = True
+            #if moveEnemies(mapObj, gameStateObj) : mapNeedsRedraw = True
         
         
         
@@ -783,7 +782,7 @@ def main():
     # Read in the levels from the text file. See the readLevelsFile() for
     # details on the format of this file and how to make your own levels.
     levels = readLevelsFile('BoulderLevels.txt')
-    currentLevelIndex = 0
+    currentLevelIndex = 2
         
     # The main game loop. This loop runs a single level, when the user
     # finishes that level, the next/previous level is loaded.
